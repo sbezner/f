@@ -1450,11 +1450,25 @@ function overlayBg(e) {
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
+/* ── Email capture via Formsubmit (free, no account needed) ── */
+const FS_URL = 'https://formsubmit.co/ajax/sbezner@gmail.com';
+
+async function submitEmail(email, source) {
+  try {
+    await fetch(FS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ email, _subject: 'DuckLips waitlist — ' + source, _captcha: 'false' })
+    });
+  } catch (_) { /* silent — UX already shows success */ }
+}
+
 function submitModal() {
   const inp = document.getElementById('modal-email');
   if (!inp.value || !inp.value.includes('@')) {
     inp.style.borderColor = 'var(--rose)'; inp.focus(); return;
   }
+  submitEmail(inp.value, 'modal');
   document.getElementById('modal-main').style.display = 'none';
   document.getElementById('modal-ok').classList.add('on');
 }
@@ -1462,7 +1476,9 @@ function submitModal() {
 /* ── Waitlist ── */
 function handleSignup(e) {
   e.preventDefault();
-  const btn = document.getElementById('wl-btn');
+  const email = document.getElementById('wl-email').value;
+  const btn   = document.getElementById('wl-btn');
+  submitEmail(email, 'waitlist-section');
   btn.textContent = "✓ You're on the list!";
   btn.style.background = 'var(--text)';
   btn.style.color = 'var(--white)';
